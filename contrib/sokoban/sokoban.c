@@ -152,5 +152,6 @@ void print_board(){
 void move(int direction){
 	switch(direction){
 		case UP:
+		printf;
 	}
 }
