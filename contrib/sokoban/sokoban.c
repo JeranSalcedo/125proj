@@ -149,9 +149,54 @@ void print_board(){
 	}
 }
 
+void checkIfMovable(int direction){
+	switch(direction){
+		case UP:
+			// if up of sokoban isn't obstructed by a wall
+		/*
+			if (player_x - 1 != 'W' && ((player_x - 1 != 'b' || player_x - 1 != 'B') && (player_x - 2 != 'b' || player_x - 2 != 'B')) ){
+				if (player_x - 1 == ){
+
+				}
+			}
+
+		*/
+			checkIfMovable(UP);
+			break;
+		case LEFT:
+			checkIfMovable(LEFT);
+			break;
+		case DOWN:
+			checkIfMovable(DOWN);
+			break;
+		case RIGHT:	
+			checkIfMovable(RIGHT);
+			break;
+	}	
+}
+
 void move(int direction){
 	switch(direction){
 		case UP:
-		printf;
+			// if up of sokoban isn't obstructed by a wall
+		/*
+			if (player_x - 1 != 'W' && ((player_x - 1 != 'b' || player_x - 1 != 'B') && (player_x - 2 != 'b' || player_x - 2 != 'B')) ){
+				if (player_x - 1 == ){
+
+				}
+			}
+
+		*/
+			checkIfMovable(UP);
+			break;
+		case LEFT:
+			checkIfMovable(LEFT);
+			break;
+		case DOWN:
+			checkIfMovable(DOWN);
+			break;
+		case RIGHT:	
+			checkIfMovable(RIGHT);
+			break;
 	}
 }
