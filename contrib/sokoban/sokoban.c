@@ -5,6 +5,9 @@
 #define TRUE 1
 #define FALSE 2
 
+#define NOT !=
+#define OVER 1
+
 #define UP 0
 #define LEFT 1
 #define DOWN 2
@@ -14,7 +17,7 @@ void map_init(int level);
 void print_board();
 void move(int direction);
 
-int GAME_OVER = 0;
+int GAME = 0;
 int MAP_LENGTH = 15;
 int MAP_WIDTH = 15;
 
@@ -29,7 +32,7 @@ int main(){
 	//-----MAP INIT
 	map_init(1);
 
-	// while(GAME_OVER != TRUE){
+	while(GAME NOT OVER){
 		print_board();
 
 		printf("Input move: ");
@@ -44,7 +47,7 @@ int main(){
 		} else if(command == 'd' || command == 'D'){
 			move(RIGHT);
 		}
-	// }
+	}
 }
 
 void map_init(int level){
@@ -68,8 +71,6 @@ void map_init(int level){
 
 	switch(level){
 		case 1:{
-			MAP[7][7] = sokoban_char;
-
 			MAP[3][7] = 'b';
 			MAP[6][7] = 'b';
 			MAP[8][7] = 'b';
@@ -79,38 +80,40 @@ void map_init(int level){
 			MAP[9][1] = 'g';
 			MAP[5][13] = 'g';
 			MAP[9][13] = 'g';
+
+			MAP[7][7] = sokoban_char;
 			break;
 		}
 		case 2:{
-			MAP[7][7] = sokoban_char;
-
 			MAP[3][7] = 'b';
 
 			MAP[5][1] = 'g';
+
+			MAP[7][7] = sokoban_char;
 			break;
 		}
 		case 3:{
-			MAP[7][7] = sokoban_char;
-
 			MAP[3][7] = 'b';
 
 			MAP[5][1] = 'g';
+
+			MAP[7][7] = sokoban_char;
 			break;
 		}
 		case 4:{
-			MAP[7][7] = sokoban_char;
-
 			MAP[3][7] = 'b';
 
 			MAP[5][1] = 'g';
+
+			MAP[7][7] = sokoban_char;
 			break;
 		}
 		case 5:{
-			MAP[7][7] = sokoban_char;
-
 			MAP[3][7] = 'b';
 
 			MAP[5][1] = 'g';
+
+			MAP[7][7] = sokoban_char;
 		}
 	}
 }
@@ -118,6 +121,7 @@ void map_init(int level){
 void print_board(){
 	int x, y;
 
+	putchar('\n');
 	for(x = 0; x < MAP_WIDTH; x++){
 		for(y = 0; y < MAP_LENGTH; y++){
 			printf("%c ", MAP[x][y]);
