@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+// DEFINED 
 #define clear() printf("\n\n\n\n\n\n\n\n\n")
 
 #define TRUE 1
@@ -9,13 +10,13 @@
 
 #define NOT !=
 #define OVER 1
-//#define LEVEL 1
-
 #define UP 0
 #define LEFT 1
 #define DOWN 2
 #define RIGHT 3
 
+// PROTOTYPES 
+//int check_map(int limit);
 void map_init(int level);
 void print_board();
 void changeState0(int direction, int p_y, int p_x);
@@ -31,8 +32,9 @@ int MAP_LENGTH = 15;
 int MAP_WIDTH = 15;
 
 // LEVEL VARIABLES
-int level = 0;
-int boxCounts[5] = {4, 6, 7, 8, 10};
+int level = 1;
+int boxCounts[6] = {0, 4, 6, 7, 8, 10};
+int check;
 
 //PLAYER VARIABLES
 int player_x, player_y;
@@ -48,35 +50,49 @@ char sokoban_square2_state;
 // MAIN FUNCTION
 int main(){
 	char command;
+	int i,j, boxesLeft;
 
-	//-----MAP INITIALIZATION
-	if ( boxCounts[level] == 0) {		
-		if (level < 4) {
-			printf("Level %d completed!\n", level);
-			level = level + 1;
-		} else {
-			printf("You finished the game! Congrats! \n");
-			GAME = 1;
-		}	
-	}  
-	map_init(level+1);	
+	//initialize level
+	map_init(level);
 
 	while(GAME NOT OVER){	
-		print_board(level+1);
+		printf("\n\n 125 SOKOBAN\n");
+		// if there are still boxes
+		if ( boxCounts[level] == 0) {		
+			if (level < 5) {
+				// printf("Level %d completed!\n", level);
+				level = level + 1;
+				map_init(level);
+			} else {
+				printf(" You finished the game! Congrats! \n");
+				GAME = 1;
+			}	
+		}
 
-		printf("Input move: ");
+		// print board depending on the level
+		print_board(level);
+
+		printf(" Input move: ");
 		scanf(" %c", &command);
 
+		// w/W is for up
 		if(command == 'w' || command == 'W'){
 			move(UP);
+		// a/A is for left
 		} else if(command == 'a' || command == 'A'){
 			move(LEFT);
+		// s/S is for down
 		} else if(command == 's' || command == 'S'){
 			move(DOWN);
+		// d/D is for right
 		} else if(command == 'd' || command == 'D'){
 			move(RIGHT);
+		// x/X is for exit
+		} else if(command == 'x' || command == 'X'){
+			printf(" Now exiting sokoban\n");
+			GAME = 1;
 		} else {
-			printf("That's an invalid input!\n");
+			printf(" That's an invalid input!\n");
 		}
 	}
 }
@@ -84,6 +100,7 @@ int main(){
 void map_init(int level){
 	int x, y;
 
+	// allocate for map
 	MAP = (char **) malloc(MAP_WIDTH * sizeof(char *));
 	for(y = 0; y < MAP_LENGTH; y++){
 		MAP[y] = (char *) malloc(MAP_LENGTH * sizeof(char));
@@ -100,6 +117,7 @@ void map_init(int level){
 		}
 	}
 
+	// map to initialize depends on the level
 	switch(level){
 		case 1:{
 			MAP[7][3] = 'b';
@@ -361,15 +379,15 @@ void map_init(int level){
 	}
 }
 
-void print_board(int stage){
+// prints the present state of the map
+void print_board(int levelStage){
 	int x, y;
 
 	putchar('\n');
-	printf(" - - - - - - - - - - - - - - \n");
-	printf(" - - - - - LEVEL %d - - - - - \n", stage);
-	printf(" - - - - - - - - - - - - - - \n\n");
+	printf(" LEVEL %d - - - - - - - - - - - \n", levelStage);
 	printf(" Boxes left: %d\n\n", boxCounts[level]);
 
+	// prints the map and the commands
 	for(y = 0; y < MAP_LENGTH; y++){
 		for(x = 0; x < MAP_WIDTH; x++){
 			printf("%c ", MAP[x][y]);
@@ -377,33 +395,37 @@ void print_board(int stage){
 		switch(y){
 			case 1: printf("\tCOMMANDS:");
 					break;
-			case 2: printf("\tMOVE UP: W");
+			case 2: printf("\tMOVE UP: w / W");
 					break;
-			case 3: printf("\tMOVE LEFT: A");
+			case 3: printf("\tMOVE LEFT: a / A");
 					break;
-			case 4: printf("\tMOVE RIGHT: D");
+			case 4: printf("\tMOVE RIGHT: d / D");
 					break;
-			case 5: printf("\tMOVE DOWN: S");
+			case 5: printf("\tMOVE DOWN: s / S");
 					break;
-			case 7: printf("\tW - Wall");
+			case 6: printf("\tEXIT: x / X");
 					break;
-			case 8: printf("\tb - Box not yet on a goal square");
+			case 8: printf("\tW - Wall");
 					break;
-			case 9: printf("\tB - Box on a goal square");
+			case 9: printf("\tb - box not yet on a goal square");
 					break;
-			case 10: printf("\ts - Sokoban not on a goal square");
+			case 10: printf("\tB - box on a goal square");
 					break;
-			case 11: printf("\tS - Sokoban on a goal square");
+			case 11: printf("\ts - sokoban not on a goal square");
 					break;
-			case 12: printf("\tg - goal square");
+			case 12: printf("\tS - sokoban on a goal square");
+					break;
+			case 13: printf("\tg - goal square");
 		}
 		putchar('\n');
 	}
 }
 
+// changes state of the sokoban (s)
 void changeState0(int direction, int p_y, int p_x){
 	int player_xState1, player_yState1;
 	
+	// change depends on the direction it is heading to
 	switch(direction){
 		case UP:	
 			player_yState1 = p_y;
@@ -423,40 +445,52 @@ void changeState0(int direction, int p_y, int p_x){
 			break;		
 	}
 
+	// if the box in front of sokoban is still within the acceptable bounds of the map
 	if ( (player_xState1 > 0 || player_xState1 < 14 ) && (player_yState1 > 0 || player_yState1 < 14 ) ){
+		// if sokoban is not stepping on the goal square
 		if (sokoban_square0_state == 's'){
 			MAP[player_y][player_x] = ' ';
 			
+			// if sokoban is heading to a goal square
 			if (sokoban_square1_state == 'g'){
 				player_y = player_yState1;
 				player_x = player_xState1;
 				MAP[player_yState1][player_xState1] = 'S';
+
+			// if sokoban is heeading to a blank square
 			} else if (sokoban_square1_state == ' '){
 				player_y = player_yState1;
 				player_x = player_xState1;
 				MAP[player_yState1][player_xState1] = 's';
 			}
+		// if sokoban is stepping on a goal square
 		} else if (sokoban_square0_state == 'S'){
+			// map the former stepped square as a goal square
 			MAP[player_y][player_x] = 'g';
 			
+			// if sokoban is heading to a goal square
 			if (sokoban_square1_state == 'g'){
 				player_y = player_yState1;
 				player_x = player_xState1;
 				MAP[player_yState1][player_xState1] = 'S';
+			// if sokoban is heeading to a blank square
 			} else if (sokoban_square1_state == ' '){
 				player_y = player_yState1;
 				player_x = player_xState1;
 				MAP[player_yState1][player_xState1] = 's';
 			}
 		}	
+	// if the box in front of sokoban is not within the acceptable bounds of the map
 	} else {
 		printf("Move is invalid!\n");
 	}
 }
 
+// changes state of the square in front of sokoban (s)
 void changeState1(int direction, int p_y, int p_x){
 	int player_xState2, player_yState2;
 	
+	// change depends on the direction the sokoban is heading to
 	switch(direction){
 		case UP:	
 			player_yState2 = p_y;
@@ -476,13 +510,19 @@ void changeState1(int direction, int p_y, int p_x){
 			break;		
 	}
 
+	// if the square two squares away from sokoban is still within the acceptable bounds of the map
 	if ( (player_xState2 > 0 || player_xState2 < 14 ) && (player_yState2 > 0 || player_yState2 < 14 ) ){
+		
+		// if sokoban is pushing a box away from the goal square
 		if (sokoban_square1_state == 'B'){
+			// the box will leave the goal square
 			MAP[player_yState2][player_xState2] = 'g';
 			sokoban_square1_state = 'g';
-			//reduces boxes completed
-			//boxCounts[level] = boxCounts[level] + 1;
+			
+			// therefore reducing the boxes completed
+			boxCounts[level] = boxCounts[level] + 1;
 
+		// if sokoban is pushing a box away from a goal square
 		} else {
 			MAP[player_yState2][player_xState2] = ' ';
 			sokoban_square1_state = ' ';
@@ -494,50 +534,60 @@ void changeState1(int direction, int p_y, int p_x){
 
 void move(int direction){
 	
+	// the move wil depend on the direction the sokoban is heading to
 	switch(direction){
 		case UP:
 			if ( player_x - 1 >= 0) {
-				printf("MOVE IS VALID - %d\n", UP);
+				//printf("MOVE IS VALID - %d\n", UP);
 
+				// records state of the square the sokoban occupies and both the two squares it is heading to 
 				sokoban_square0_state = MAP[player_y][player_x];
 				sokoban_square1_state = MAP[player_y][player_x-1];
 				sokoban_square2_state = MAP[player_y][player_x-2];			
 
-				// IF BOX IS AGAINST ITS DIRECTION
-				// CHANGE STATE1 FIRST
-
+				// if the sokoban is heading to a box
 				if ( MAP[player_y][player_x-1] == 'b' || MAP[player_y][player_x-1] == 'B' ){
-					printf("first square is a box\n");
+					//printf("first square is a box\n");
 					
+					// if that box is heading to a goal square
 					if ( sokoban_square2_state == 'g' ){
-						printf("second square is a goal square!\n ");
+						//printf("second square is a goal square!\n ");
 						
+						// render the square as a box stepping on a goal square
 						MAP[player_y][player_x-2] = 'B';
 						sokoban_square2_state = 'B';
+						// since a box has been put to a goal square, the number of boxes not on the goal squares will be reduced by one  
 						boxCounts[level] = boxCounts[level] - 1;
 
+						// function to change the state of square in front of sokoban
 						changeState1(UP, player_y, player_x);
+						// function to change the state of square occupied by sokoban						
 						changeState0(UP, player_y, player_x);
-						
+
+					// if that box is heading to a blank square
 					} else if ( sokoban_square2_state == ' ' ) {
-						printf("second square is blank\n");
+						//printf("second square is blank\n");
 						
+						// render the square as a box not stepping on a goal square
 						MAP[player_y][player_x-2] = 'b';
 						sokoban_square2_state = 'b';
 
+						// function to change the state of square in front of sokoban						
 						changeState1(UP, player_y, player_x);
+						// function to change the state of square occupied by sokoban
 						changeState0(UP, player_y, player_x);			
 					}
 						 
 				// if the square on its direction is a goal square
 				} else if ( MAP[player_y][player_x-1] == 'g' ) {
-					printf("first square is g\n");
+					//printf("first square is g\n");
 					MAP[player_y][player_x-1] = sokoban_char_goalsquare;
+
 					changeState0(UP, player_y, player_x);
 										
 				// if the square on its direction is a blank square			
 				} else if ( MAP[player_y][player_x-1] == ' ' ) {
-					printf("first square is blank\n");
+					//printf("first square is blank\n");
 					MAP[player_y][player_x-1] = 's'; 
 					changeState0(UP, player_y, player_x);
 				
@@ -545,112 +595,123 @@ void move(int direction){
 					printf("move unknown\n");
 				}
 
-				printf("SOKOBAN NOW IN SQUARE (%d, %d)\n", player_x, player_y);
+				printf(" SOKOBAN NOW IN SQUARE (%d, %d)\n", player_x, player_y);
 			} else {
-				printf("MOVE NOT VALID!\n");
+				printf(" Move is invalid!\n");
 			}
 
 			break;
 
 		case LEFT:
 			if ( player_y - 1 >= 0){
-				printf("MOVE IS left - %d\n", LEFT);
-				//printf("UMABOT!\n");
+				//printf("MOVE IS left - %d\n", LEFT);
 
+				// records state of the square the sokoban occupies and both the two squares it is heading to 
 				sokoban_square0_state = MAP[player_y][player_x];
 				sokoban_square1_state = MAP[player_y-1][player_x];
 				sokoban_square2_state = MAP[player_y-2][player_x];			
 
-				// IF BOX IS AGAINST ITS DIRECTION
-				// CHANGE STATE1 FIRST
-
+				// if the sokoban is heading to a box
 				if ( MAP[player_y-1][player_x] == 'b' || MAP[player_y-1][player_x] == 'B' ){
-					printf("first square is a box\n");
+					//printf("first square is a box\n");
 					
+					// if that box is heading to a goal square
 					if ( sokoban_square2_state == 'g' ){
-						printf("second square is a goal square!\n ");
+						//printf("second square is a goal square!\n ");
 						
+						// render the square as a box stepping on a goal square
 						MAP[player_y-2][player_x] = 'B';
 						sokoban_square2_state = 'B';
+						
+						// reduces boxCounts
 						boxCounts[level] = boxCounts[level] - 1;
-
+						
+						// function to change the state of square in front of sokoban
 						changeState1(LEFT, player_y, player_x);
+						// function to change the state of square occupied by sokoban
 						changeState0(LEFT, player_y, player_x);
 						
 					} else if ( sokoban_square2_state == ' ' ) {
-						printf("second square is blank\n");
+						//printf("second square is blank\n");
 						
 						MAP[player_y-2][player_x] = 'b';
 						sokoban_square2_state = 'b';
-
+						// function to change the state of square in front of sokoban
 						changeState1(LEFT, player_y, player_x);
+						// function to change the state of square occupied by sokoban
 						changeState0(LEFT, player_y, player_x);			
 					}
 						 
 				// if the square on its direction is a goal square
 				} else if ( MAP[player_y-1][player_x] == 'g' ) {
-					printf("first square is g\n");
+					//printf("first square is g\n");
 					MAP[player_y-1][player_x] = sokoban_char_goalsquare;
 					changeState0(LEFT, player_y, player_x);
 										
 				// if the square on its direction is a blank square			
 				} else if ( MAP[player_y-1][player_x] == ' ' ) {
-					printf("first square is blank\n");
+					//printf("first square is blank\n");
 					MAP[player_y-1][player_x] = 's'; 
 					changeState0(LEFT, player_y, player_x);
 				} else {
 					printf("move unknown\n");
 				}
 
-				printf("SOKOBAN NOW IN SQUARE (%d, %d)\n", player_x, player_y);
+				printf(" SOKOBAN NOW IN SQUARE (%d, %d)\n", player_x, player_y);
 			} else {
-				printf("MOVE NOT VALID!\n");
+				printf(" Move is invalid!\n");
 			}
 
 			break;
 		case DOWN:
 			if ( player_x + 1 <= 14){
-				printf("MOVE IS VALID - %d\n", DOWN);
-
+				// printf("MOVE IS VALID - %d\n", DOWN);
+				
+				// records state of the square the sokoban occupies and both the two squares it is heading to 
 				sokoban_square0_state = MAP[player_y][player_x];
 				sokoban_square1_state = MAP[player_y][player_x+1];
 				sokoban_square2_state = MAP[player_y][player_x+2];			
 
-				// IF BOX IS AGAINST ITS DIRECTION
-				// CHANGE STATE1 FIRST
-
 				if ( MAP[player_y][player_x+1] == 'b' || MAP[player_y][player_x+1] == 'B' ){
-					printf("first square is a box\n");
+					// printf("first square is a box\n");
 					
+					// if that box is heading to a goal square
 					if ( sokoban_square2_state == 'g' ){
-						printf("second square is a goal square!\n ");
-						
+						// printf("second square is a goal square!\n ");
+
+						// render the square as a box stepping on a goal square
 						MAP[player_y][player_x+2] = 'B';
 						sokoban_square2_state = 'B';
+						
+						//reduces boxCounts
+						boxCounts[level] = boxCounts[level] - 1;
 
+						// function to change the state of square in front of sokoban
 						changeState1(DOWN, player_y, player_x);
+						// function to change the state of square occupied by sokoban
 						changeState0(DOWN, player_y, player_x);
 						
 					} else if ( sokoban_square2_state == ' ' ) {
-						printf("second square is blank\n");
+						// printf("second square is blank\n");
 						
 						MAP[player_y][player_x+2] = 'b';
 						sokoban_square2_state = 'b';
-						boxCounts[level] = boxCounts[level] - 1;
 
+						// function to change the state of square in front of sokoban
 						changeState1(DOWN, player_y, player_x);
+						// function to change the state of square occupied by sokoban
 						changeState0(DOWN, player_y, player_x);			
 					}
 						 
 				// if the square on its direction is a goal square
 				} else if ( MAP[player_y][player_x+1] == 'g' ) {
-					printf("first square is g\n");
+					// printf("first square is g\n");
 					MAP[player_y][player_x+1] = sokoban_char_goalsquare;
 					changeState0(DOWN, player_y, player_x);
 										
 				// if the square on its direction is a blank square			
 				} else if ( MAP[player_y][player_x+1] == ' ' ) {
-					printf("first square is blank\n");
+					// printf("first square is blank\n");
 					MAP[player_y][player_x+1] = 's'; 
 					changeState0(DOWN, player_y, player_x);
 				
@@ -658,66 +719,72 @@ void move(int direction){
 					printf("move unknown\n");
 				}
 
-				printf("SOKOBAN NOW IN SQUARE (%d, %d)\n", player_x, player_y);
+				printf(" SOKOBAN NOW IN SQUARE (%d, %d)\n", player_x, player_y);
 			} else {
-				printf("MOVE NOT VALID!\n");
+				printf(" Move is invalid!\n");
 			}
 
 			break;
 
 		case RIGHT:	
 			if ( player_y + 1 <= 14){
-				printf("MOVE IS VALID - %d\n", RIGHT);
+				// printf("MOVE IS VALID - %d\n", RIGHT);
 
+				// records state of the square the sokoban occupies and both the two squares it is heading to 
 				sokoban_square0_state = MAP[player_y][player_x];
 				sokoban_square1_state = MAP[player_y+1][player_x];
 				sokoban_square2_state = MAP[player_y+2][player_x];			
 
-				// IF BOX IS AGAINST ITS DIRECTION
-				// CHANGE STATE1 FIRST
-
+				// if that box is heading to a goal square
 				if ( MAP[player_y+1][player_x] == 'b' || MAP[player_y+1][player_x] == 'B' ){
-					printf("first square is a box\n");
+					// printf("first square is a box\n");
 					
 					if ( sokoban_square2_state == 'g' ){
-						printf("second square is a goal square!\n ");
+						// printf("second square is a goal square!\n ");
 						
+						// render the square as a box stepping on a goal square
 						MAP[player_y+2][player_x] = 'B';
 						sokoban_square2_state = 'B';
+						
+						// reduces boxCounts
 						boxCounts[level] = boxCounts[level] - 1;
-
+						
+						// function to change the state of square in front of sokoban
 						changeState1(RIGHT, player_y, player_x);
+						// function to change the state of square occupied by sokoban
 						changeState0(RIGHT, player_y, player_x);
 						
 					} else if ( sokoban_square2_state == ' ' ) {
-						printf("second square is blank\n");
+						// printf("second square is blank\n");
 						
 						MAP[player_y+2][player_x] = 'b';
 						sokoban_square2_state = 'b';
-
+						
+						// function to change the state of square in front of sokoban
 						changeState1(RIGHT, player_y, player_x);
+						// function to change the state of square occupied by sokoban
 						changeState0(RIGHT, player_y, player_x);			
 					}
 						 
 				// if the square on its direction is a goal square
 				} else if ( MAP[player_y+1][player_x] == 'g' ) {
-					printf("first square is g\n");
+					// printf("first square is g\n");
 					MAP[player_y+1][player_x] = sokoban_char_goalsquare;
 					changeState0(RIGHT, player_y, player_x);
 										
 				// if the square on its direction is a blank square			
 				} else if ( MAP[player_y+1][player_x] == ' ' ) {
-					printf("first square is blank\n");
+					// printf("first square is blank\n");
 					MAP[player_y+1][player_x] = 's'; 
 					changeState0(RIGHT, player_y, player_x);
 				
 				} else {
-					printf("move unknown\n");
+					printf(" Move unknown\n");
 				}
 
-				printf("SOKOBAN NOW IN SQUARE (%d, %d)\n", player_x, player_y);
+				printf(" SOKOBAN NOW IN SQUARE (%d, %d)\n", player_x, player_y);
 			} else {
-				printf("MOVE NOT VALID!\n");
+				printf(" Move is invalid!\n");
 			}
 
 			break;
