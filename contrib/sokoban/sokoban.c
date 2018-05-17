@@ -47,6 +47,7 @@ int MAP_WIDTH = 15;
 
 // LEVEL VARIABLES
 int level = 1;
+int boxCountsOrig[6] = {0, 4, 6, 7, 8, 10};
 int boxCounts[6] = {0, 4, 6, 7, 8, 10};
 int check;
 
@@ -64,8 +65,9 @@ char sokoban_square2_state;
 // MAIN FUNCTION
 int main(){
 	char command;
+	char message_congrats[15];
 	int i,j, boxesLeft;
-
+	sprintf(message_congrats, "%s", "Finished!");
 	//initialize graphics
 	set_graphics(VGA_320X200X256);
 	
@@ -73,8 +75,6 @@ int main(){
 	map_init();
 
 	while(GAME NOT OVER){	
-		printf("\n\n 125 SOKOBAN\n");
-
 		// if there are still boxes
 		if ( boxCounts[level] == 0) {		
 			if (level < 5) {
@@ -82,7 +82,15 @@ int main(){
 				level = level + 1;
 				map_init();
 			} else {
-				printf(" You finished the game! Congrats! \n");
+
+				// clear the zone for the level first
+				for(i=0; i<200; i++){
+					for(j=0; j<40; j++){
+						write_pixel(i, j, GOALSQ);
+					}
+				}
+
+				write_text(message_boxes, 150, 10, 63, 0);
 				GAME = 1;
 			}	
 		}
@@ -109,10 +117,13 @@ int main(){
 			move(RIGHT);
 		// x/X is for exit
 		} else if(command == 'x' || command == 'X'){
-			printf(" Now exiting sokoban\n");
 			GAME = 1;
+		// R/r is for restart level
+		} else if (command =='r' || command == 'R'){
+			boxCounts[level] = boxCountsOrig[level];
+			map_init();
 		} else {
-			printf(" That's an invalid input!\n");
+			write_text("Input is invalid!", 170, 90, 63, 0);
 		}
 
 	}
@@ -290,7 +301,6 @@ void map_init(){
 			MAP[6][3] = 'W';
 			MAP[6][5] = 'W';
 			MAP[6][6] = 'W';
-			MAP[6][7] = 'W';
 			MAP[6][8] = 'W';
 			MAP[6][13] = 'W';
 			MAP[7][13] = 'W';
@@ -430,7 +440,7 @@ void print_board(){
 	int X_PADDING = 10;
 	int Y_PADDING = 40;
 	int x, y, i, j ;
-	
+
 	char message_level[2];
 	char message_boxes[3];
 
@@ -438,15 +448,18 @@ void print_board(){
 	int color = 0;
 	int type;
 
-
-	//printf(" \nLEVEL %d - - - - - - - - - - - \n", levelStage);
-	//printf(" Boxes left: %d\n\n", boxCounts[level]);
 	sprintf(message_level, "%d", level);
-	sprintf(message_boxes, "%d", level);
+	sprintf(message_boxes, "%d", boxCounts[level]);
 
 	clrscr();
 
-	// (level , )
+	// clear the zone for the level first
+	for(i=0; i<200; i++){
+		for(j=0; j<40; j++){
+			write_pixel(i, j, GOALSQ);
+		}
+	}
+	// writes the level, and the comands
 	write_text("LEVEL", 10, 10, 63, 0);
 	write_text(message_level, 70, 10, 63, 0);
 	write_text("Boxes left: ", 10, 20, 63, 0);
@@ -457,7 +470,8 @@ void print_board(){
 	write_text("Move left: a", 170, 50, 63, 0);
 	write_text("Move down: s", 170, 60, 63, 0);
 	write_text("Move right: d", 170, 70, 63, 0);
-	write_text("Exit: x", 170, 80, 63, 0);
+	write_text("Restart level: r", 170, 80, 63, 0);
+	write_text("Exit: x", 170, 90, 63, 0);
 
 	for (y = 0; y < MAP_LENGTH; y++){
 		for(x = 0; x < MAP_WIDTH; x++){
@@ -478,47 +492,9 @@ void print_board(){
 				for (j=X_PADDING; j<X_PADDING + 10; j++){
 					write_pixel(x * 10 + j, y * 10 + i, color);
 				}
-			}			
-			//write_pixel(x*10, y*10, color);
-			//color = color + 1;
+			}
 		}
 	}
-	/*
-	// prints the map and the commands
-	for(y = 0; y < MAP_LENGTH; y++){
-		for(x = 0; x < MAP_WIDTH; x++){
-			printf("%c ", MAP[x][y]);
-		}
-		
-		switch(y){
-			case 1: printf("\tCOMMANDS:");
-					break;
-			case 2: printf("\tMOVE UP: w / W");
-					break;
-			case 3: printf("\tMOVE LEFT: a / A");
-					break;
-			case 4: printf("\tMOVE RIGHT: d / D");
-					break;
-			case 5: printf("\tMOVE DOWN: s / S");
-					break;
-			case 6: printf("\tEXIT: x / X");
-					break;
-			case 8: printf("\tW - Wall");
-					break;
-			case 9: printf("\tb - box not yet on a goal square");
-					break;
-			case 10: printf("\tB - box on a goal square");
-					break;
-			case 11: printf("\ts - sokoban not on a goal square");
-					break;
-			case 12: printf("\tS - sokoban on a goal square");
-					break;
-			case 13: printf("\tg - goal square");
-		}
-		printf("\n");
-		
-	}
-	*/
 }
 
 // changes state of the sokoban (s)
